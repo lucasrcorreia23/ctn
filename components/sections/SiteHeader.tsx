@@ -43,14 +43,19 @@ export function SiteHeader() {
   const eventsList = useMemo(() => events.slice(0, 4), []);
 
   const [scrolled, setScrolled] = useState(false);
+  const lastYRef = useRef(0);
   const closeMenu = () => setMenuOpen(false);
 
   useEffect(() => {
+    lastYRef.current = window.scrollY;
     const onScroll = () => {
       const currentY = window.scrollY;
+      const lastY = lastYRef.current;
+      lastYRef.current = currentY;
       setScrolled(prev => {
-        if (prev && currentY < 30) return false;
-        if (!prev && currentY > 120) return true;
+        if (currentY < 60) return false;
+        if (currentY > lastY + 8) return true;
+        if (currentY < lastY - 8) return false;
         return prev;
       });
     };
@@ -98,7 +103,7 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className={`sticky top-0 z-40 bg-white transition-shadow duration-150 ease-in-out${scrolled ? ' shadow-xs' : ''}`}>
+      <header className={`sticky top-0 z-40 bg-white transition-shadow duration-150 ease-in-out`}>
 
         {/* Topbar — collapses on scroll */}
         <div
@@ -234,13 +239,6 @@ export function SiteHeader() {
             </nav>
           </div>
         </div>
-
-        {/* Desktop: spacer abaixo da navbar */}
-        <div
-          aria-hidden
-          className="hidden overflow-hidden transition-all duration-150 ease-in-out lg:block"
-          style={{ height: scrolled ? 0 : 8 }}
-        />
 
       </header>
 

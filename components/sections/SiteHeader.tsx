@@ -185,13 +185,9 @@ export function SiteHeader() {
         </div>
 
         {/* Desktop: navbar */}
-        <div className={`hidden w-full relative lg:block${scrolled ? ' border-b border-zinc-200' : ''}`}>
-          {!scrolled && (
-            <>
-              <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-zinc-200" />
-              <div aria-hidden className="absolute inset-x-0 bottom-0 h-px bg-zinc-200" />
-            </>
-          )}
+        <div className={`hidden w-full relative lg:block ${scrolled ? 'border-b border-zinc-200' : 'border-b-0'}`}>
+          <div aria-hidden className={`absolute inset-x-0 top-0 h-px bg-zinc-200 transition-opacity duration-150 ${scrolled ? 'opacity-0' : 'opacity-100'}`} />
+          <div aria-hidden className={`absolute inset-x-0 bottom-0 h-px bg-zinc-200 transition-opacity duration-150 ${scrolled ? 'opacity-0' : 'opacity-100'}`} />
           <div className="relative mx-auto flex max-w-7xl items-center px-8">
             <nav
               aria-label="Primary categories left"

@@ -43,20 +43,16 @@ export function SiteHeader() {
   const eventsList = useMemo(() => events.slice(0, 4), []);
 
   const [scrolled, setScrolled] = useState(false);
-  const lastYRef = useRef(0);
   const closeMenu = () => setMenuOpen(false);
 
   useEffect(() => {
-    lastYRef.current = window.scrollY;
     const onScroll = () => {
       const currentY = window.scrollY;
-      const lastY = lastYRef.current;
-      if (currentY < lastY) {
-        setScrolled(false);
-      } else if (currentY > lastY && currentY > 80) {
-        setScrolled(true);
-      }
-      lastYRef.current = currentY;
+      setScrolled(prev => {
+        if (prev && currentY < 30) return false;
+        if (!prev && currentY > 120) return true;
+        return prev;
+      });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -102,11 +98,11 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className={`sticky top-0 z-40 bg-white transition-shadow duration-300 ease-in-out${scrolled ? ' shadow-xs' : ''}`}>
+      <header className={`sticky top-0 z-40 bg-white transition-shadow duration-150 ease-in-out${scrolled ? ' shadow-xs' : ''}`}>
 
         {/* Topbar — collapses on scroll */}
         <div
-          className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${
+          className={`overflow-hidden transition-[max-height] duration-150 ease-in-out ${
             scrolled ? "max-h-0" : "max-h-16"
           }`}
         >
@@ -170,7 +166,7 @@ export function SiteHeader() {
         {/* Navbar — centered logo flanked by category nav */}
 
         {/* Mobile: logo only */}
-        <div className="flex items-center border-b border-zinc-200 px-4 py-4 lg:hidden">
+        <div className="flex py-4 items-center border-b border-zinc-200 px-4 py-4 lg:hidden">
           <Link href="/" aria-label="Cruise Trade News home">
             <Image
               src="/ctn-logo.png"
@@ -178,7 +174,7 @@ export function SiteHeader() {
               width={912}
               height={300}
               priority
-              className="h-10 w-auto sm:h-12"
+              className="h-10 w-auto  sm:h-12"
             />
           </Link>
         </div>
@@ -194,13 +190,13 @@ export function SiteHeader() {
           <div className="relative mx-auto flex max-w-7xl items-center px-8">
             <nav
               aria-label="Primary categories left"
-              className={`flex flex-1 items-center justify-end gap-10 pr-8 transition-[padding] duration-300 ease-in-out ${scrolled ? 'py-4' : 'py-8'}`}
+              className={`flex flex-1 items-center justify-end gap-10 pr-8 transition-[padding] duration-150 ease-in-out ${scrolled ? 'py-4' : 'py-8'}`}
             >
               {headerCategoriesLeft.map((cat) => (
                 <Link
                   key={cat.href}
                   href={cat.href}
-                  className={`font-semibold uppercase tracking-[0.16em] text-zinc-900 hover:underline transition-[font-size] duration-300 ease-in-out ${scrolled ? 'text-xs' : 'text-sm'}`}
+                  className={`font-semibold uppercase tracking-[0.16em] text-zinc-900 hover:underline transition-[font-size] duration-150 ease-in-out ${scrolled ? 'text-xs' : 'text-sm'}`}
                 >
                   {cat.label}
                 </Link>
@@ -209,7 +205,7 @@ export function SiteHeader() {
 
             <Link
               href="/"
-              className={`relative z-10 flex self-stretch items-center bg-white py-1 transition-[padding] duration-300 ease-in-out ${scrolled ? 'px-6' : 'px-12'}`}
+              className={`relative z-10 flex self-stretch items-center bg-white py-1 transition-[padding] duration-150 ease-in-out ${scrolled ? 'px-6' : 'px-12'}`}
               aria-label="Cruise Trade News home"
             >
               <Image
@@ -218,19 +214,19 @@ export function SiteHeader() {
                 width={912}
                 height={300}
                 priority
-                className={`w-auto transition-[height] duration-300 ease-in-out ${scrolled ? 'h-10' : 'h-16'}`}
+                className={`w-auto transition-[height] duration-150 ease-in-out ${scrolled ? 'h-10' : 'h-16'}`}
               />
             </Link>
 
             <nav
               aria-label="Primary categories right"
-              className={`flex flex-1 items-center gap-10 pl-8 transition-[padding] duration-300 ease-in-out ${scrolled ? 'py-4' : 'py-8'}`}
+              className={`flex flex-1 items-center gap-10 pl-8 transition-[padding] duration-150 ease-in-out ${scrolled ? 'py-4' : 'py-8'}`}
             >
               {headerCategoriesRight.map((cat) => (
                 <Link
                   key={cat.href}
                   href={cat.href}
-                  className={`font-semibold uppercase tracking-[0.16em] text-zinc-900 hover:underline transition-[font-size] duration-300 ease-in-out ${scrolled ? 'text-xs' : 'text-sm'}`}
+                  className={`font-semibold uppercase tracking-[0.16em] text-zinc-900 hover:underline transition-[font-size] duration-150 ease-in-out ${scrolled ? 'text-xs' : 'text-sm'}`}
                 >
                   {cat.label}
                 </Link>
@@ -242,7 +238,7 @@ export function SiteHeader() {
         {/* Desktop: spacer abaixo da navbar */}
         <div
           aria-hidden
-          className="hidden overflow-hidden transition-all duration-300 ease-in-out lg:block"
+          className="hidden overflow-hidden transition-all duration-150 ease-in-out lg:block"
           style={{ height: scrolled ? 0 : 8 }}
         />
 

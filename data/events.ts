@@ -98,3 +98,37 @@ export const events: EventItem[] = [
 export function getEventBySlug(slug: string): EventItem | undefined {
   return events.find((e) => e.slug === slug);
 }
+
+export interface ChallengeEvent {
+  title: string;
+  date: string;
+  region: string;
+  imageKind: ArticleImageKind;
+}
+
+export const challengeEvents: ChallengeEvent[] = [
+  {
+    title: "Southampton Cruise Challenge",
+    date: "3rd June 2026",
+    region: "South East",
+    imageKind: "stage",
+  },
+  {
+    title: "Cardiff Cruise Challenge",
+    date: "10th June 2026",
+    region: "South Wales",
+    imageKind: "stage",
+  },
+  {
+    title: "Edinburgh Cruise Challenge",
+    date: "17th June 2026",
+    region: "Scotland",
+    imageKind: "stage",
+  },
+  {
+    title: "Leeds Cruise Challenge",
+    date: "1st July 2026",
+    region: "North East",
+    imageKind: "stage",
+  },
+];

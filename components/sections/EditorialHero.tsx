@@ -21,10 +21,8 @@ export function EditorialHero({
   secondFeature?: Article;
   sidePair?: Article[];
 }) {
-  const latestList = (latest ?? []).slice(0, 10);
+  const latestList = (latest ?? []).slice(0, 5);
   const sideArticles = (sidePair ?? []).slice(0, 2);
-  const leadMinutes = readTimeFromBody(article.body);
-  const secondaryMinutes = secondary ? readTimeFromBody(secondary.body) : 0;
   const magazineTeaser = magazine?.highlights[0];
   const showRow2 = Boolean(secondFeature || sideArticles.length > 0);
 
@@ -43,11 +41,11 @@ export function EditorialHero({
               aria-label="Latest stories"
             >
               <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-900">
-                Latest Stories
+                Latest News
               </div>
               <ol className="mt-4 divide-y divide-zinc-200 border-t border-zinc-200">
                 {latestList.map((item) => (
-                  <li key={item.slug} className="py-3">
+                  <li key={item.slug} className="py-4">
                     <Link
                       href={`/news/${item.slug}`}
                       className="group flex flex-col gap-1"
@@ -57,9 +55,6 @@ export function EditorialHero({
                       </span>
                       <span className="text-sm font-semibold leading-snug text-zinc-900 group-hover:underline">
                         {item.title}
-                      </span>
-                      <span className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">
-                        <time>{item.date}</time>
                       </span>
                     </Link>
                   </li>
@@ -98,13 +93,6 @@ export function EditorialHero({
                 </Link>
               </h1>
               <p className="max-w-3xl text-lg text-zinc-600">{article.excerpt}</p>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] uppercase tracking-[0.16em] text-zinc-500">
-                <span className="text-zinc-700">By {article.author}</span>
-                <span aria-hidden>·</span>
-                <time>{article.date}</time>
-                <span aria-hidden>·</span>
-                <span>{leadMinutes} min read</span>
-              </div>
             </article>
 
             {/* Right aside — secondary article + magazine */}
@@ -132,11 +120,7 @@ export function EditorialHero({
                     </Link>
                   </h2>
                   <div className="text-[10px] uppercase tracking-[0.16em] text-zinc-500">
-                    <span>{secondary.author}</span>
-                    <span aria-hidden> · </span>
-                    <time>{secondary.date}</time>
-                    <span aria-hidden> · </span>
-                    <span>{secondaryMinutes} min read</span>
+                    {secondary.author}
                   </div>
                 </article>
               )}

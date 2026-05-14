@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   useEffect,
-  useMemo,
   useRef,
   useState,
   type FormEvent,
@@ -14,53 +13,46 @@ import { SearchOverlay } from "@/components/sections/SearchOverlay";
 import {
   headerCategoriesLeft,
   headerCategoriesRight,
-  megaMenuColumns,
-  socialLinks,
 } from "@/data/navigation";
-import { events } from "@/data/events";
 
-const LEARN_MORE_LINKS = [
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-  { label: "Advertise", href: "/advertise" },
-  { label: "Subscribe", href: "/subscribe" },
-  { label: "Terms", href: "/terms" },
-  { label: "Privacy", href: "/privacy" },
-  { label: "Cookies", href: "/cookies" },
-];
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [initialSearchQuery, setInitialSearchQuery] = useState("");
   const [overlaySearch, setOverlaySearch] = useState("");
-  const [nlName, setNlName] = useState("");
   const [nlEmail, setNlEmail] = useState("");
   const [nlSubmitted, setNlSubmitted] = useState(false);
 
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
-  const eventsList = useMemo(() => events.slice(0, 4), []);
 
   const [scrolled, setScrolled] = useState(false);
-  const lastYRef = useRef(0);
   const closeMenu = () => setMenuOpen(false);
 
   useEffect(() => {
-    lastYRef.current = window.scrollY;
+    let rafId: number | null = null;
+
     const onScroll = () => {
-      const currentY = window.scrollY;
-      const lastY = lastYRef.current;
-      lastYRef.current = currentY;
-      setScrolled(prev => {
-        if (currentY < 60) return false;
-        if (currentY > lastY + 8) return true;
-        if (currentY < lastY - 8) return false;
-        return prev;
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        const currentY = window.scrollY;
+        setScrolled(prev => {
+          if (!prev && currentY > 120) return true;
+          if (prev && currentY < 60) return false;
+          return prev;
+        });
       });
     };
+
+    setScrolled(window.scrollY > 120);
+
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   useEffect(() => {
@@ -117,9 +109,9 @@ export function SiteHeader() {
               className="hidden items-center gap-5 text-[11px] uppercase tracking-[0.16em] text-zinc-600 sm:flex"
             >
               <Link href="/about" className="hover:text-zinc-900">About</Link>
-              <Link href="/podcast" className="hover:text-zinc-900">Podcast</Link>
-              <Link href="/magazines" className="hover:text-zinc-900">Magazines</Link>
-              <Link href="/newsletter" className="hover:text-zinc-900">Newsletter</Link>
+              <Link href="/advertise" className="hover:text-zinc-900">Advertise with us</Link>
+              <Link href="/meet-the-team" className="hover:text-zinc-900">Meet the team</Link>
+              <Link href="/contact" className="hover:text-zinc-900">Contact us</Link>
             </nav>
 
             <div className="flex items-center gap-4 text-xs uppercase tracking-[0.16em] text-zinc-600">
@@ -245,24 +237,24 @@ export function SiteHeader() {
           role="dialog"
           aria-modal="true"
           aria-label="Site menu"
-          className="fixed inset-0 z-50 overflow-y-auto bg-zinc-900 text-zinc-50"
+          className="fixed inset-0 z-50 overflow-y-auto bg-black text-zinc-50"
         >
-          <Container className="py-6 lg:py-8">
-            <div className="flex flex-col gap-4 border-b border-zinc-700 pb-6 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
-              <nav
-                className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm"
-                aria-label="Quick links"
-              >
-                <Link href="/about" onClick={closeMenu} className="hover:underline">About</Link>
-                <Link href="/news/latest" onClick={closeMenu} className="hover:underline">Latest</Link>
-                <Link href="/newsletter" onClick={closeMenu} className="hover:underline">Newsletter</Link>
+          <Container className="py-10">
+
+            {/* Top row — utility nav + search + close */}
+            <div className="flex items-center justify-between border-b border-zinc-700 pb-6">
+              <nav aria-label="Utility" className="flex flex-wrap items-center gap-5 text-[11px] uppercase tracking-[0.16em] text-white">
+                <Link href="/about" onClick={closeMenu} className="hover:text-zinc-300">About</Link>
+                <Link href="/advertise" onClick={closeMenu} className="hover:text-zinc-300">Advertise With Us</Link>
+                <Link href="/meet-the-team" onClick={closeMenu} className="hover:text-zinc-300">Meet the Team</Link>
+                <Link href="/contact" onClick={closeMenu} className="hover:text-zinc-300">Contact Us</Link>
               </nav>
               <div className="flex items-center gap-3">
                 <form
                   onSubmit={handleSearchSubmit}
                   role="search"
                   aria-label="Search Cruise Trade News"
-                  className="flex h-10 items-center border border-zinc-700 bg-zinc-800"
+                  className="flex h-10 items-center border border-zinc-700 bg-[#27272a]"
                 >
                   <input
                     type="search"
@@ -274,7 +266,7 @@ export function SiteHeader() {
                   />
                   <button
                     type="submit"
-                    className="h-full border-l border-zinc-700 px-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-200 hover:bg-zinc-700"
+                    className="h-full border-l border-zinc-700 px-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-300 hover:bg-zinc-700"
                     aria-label="Submit search"
                   >
                     Go
@@ -284,7 +276,7 @@ export function SiteHeader() {
                   ref={closeButtonRef}
                   type="button"
                   onClick={closeMenu}
-                  className="inline-flex h-10 w-10 items-center justify-center border border-zinc-700 bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
+                  className="inline-flex h-10 w-10 items-center justify-center border border-zinc-700 bg-[#27272a] text-zinc-200 hover:bg-zinc-700"
                   aria-label="Close menu"
                 >
                   <span aria-hidden className="text-lg leading-none">×</span>
@@ -292,208 +284,153 @@ export function SiteHeader() {
               </div>
             </div>
 
-            <div className="mt-8 grid gap-8 lg:grid-cols-12">
-              <div className="lg:col-span-2">
-                <div className="text-2xl italic text-zinc-400 lg:text-3xl">
-                  Explore
-                  <br />
-                  by
+            {/* Main content — "Explore by" + nav columns + newsletter */}
+            <div className="mt-14 flex items-start gap-12 lg:gap-16">
+              <p className="shrink-0 text-3xl text-white">Explore by</p>
+
+              <div className="flex flex-1 gap-8 sm:gap-12">
+                {/* News */}
+                <div className="flex flex-col gap-4">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-400">News</div>
+                  <ul className="space-y-3">
+                    {[
+                      { label: "Ocean", href: "/news/ocean" },
+                      { label: "River", href: "/news/river" },
+                      { label: "Luxury", href: "/news/luxury" },
+                      { label: "Expedition", href: "/news/expedition" },
+                    ].map((item) => (
+                      <li key={item.href}>
+                        <Link href={item.href} onClick={closeMenu} className="text-base font-semibold text-[#fafafa] hover:text-white">
+                          {item.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Features */}
+                <div className="flex flex-col gap-4">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-400">Features</div>
+                  <ul className="space-y-3">
+                    {[
+                      { label: "Analysis", href: "/features-analysis/analysis-comment" },
+                      { label: "Comment", href: "/features-analysis/analysis-comment" },
+                      { label: "Interviews", href: "/features-analysis/interviews" },
+                      { label: "Cruise Review", href: "/features-analysis/cruise-review" },
+                      { label: "Marketing Tips", href: "/features-analysis/mktg-tips" },
+                    ].map((item) => (
+                      <li key={item.label}>
+                        <Link href={item.href} onClick={closeMenu} className="text-base font-semibold text-[#fafafa] hover:text-white">
+                          {item.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Trade */}
+                <div className="flex flex-col gap-4">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-400">Trade</div>
+                  <ul className="space-y-3">
+                    {[
+                      { label: "Events", href: "/events" },
+                      { label: "Magazines", href: "/magazines" },
+                      { label: "Podcast", href: "/podcast" },
+                      { label: "Knowledge Hub", href: "/knowledge-hub" },
+                    ].map((item) => (
+                      <li key={item.href}>
+                        <Link href={item.href} onClick={closeMenu} className="text-base font-semibold text-[#fafafa] hover:text-white">
+                          {item.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Agent */}
+                <div className="flex flex-col gap-4">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-400">Agent</div>
+                  <ul className="space-y-3">
+                    {[
+                      { label: "Incentives", href: "/agent-portal/incentives" },
+                      { label: "Competitions", href: "/agent-portal/competitions" },
+                      { label: "Offers", href: "/agent-portal/offers" },
+                    ].map((item) => (
+                      <li key={item.href}>
+                        <Link href={item.href} onClick={closeMenu} className="text-base font-semibold text-[#fafafa] hover:text-white">
+                          {item.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
 
-              <div className="lg:col-span-2">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-300">
-                  {megaMenuColumns[0].title}
-                </div>
-                <ul className="mt-4 space-y-3">
-                  {megaMenuColumns[0].items.map((item) => (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        onClick={closeMenu}
-                        className="text-base font-semibold text-zinc-50 hover:text-white"
+              {/* Newsletter */}
+              <div className="w-80 shrink-0 border border-zinc-700 bg-[rgba(39,39,42,0.6)] p-5">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-400">Newsletter</div>
+                <h3 className="mt-3 text-xl font-semibold leading-snug text-[#fafafa]">
+                  Sign up for our newsletter
+                </h3>
+                {nlSubmitted ? (
+                  <p className="mt-4 text-sm text-zinc-300">
+                    Thanks. The next CTN Briefing will land in your inbox at {nlEmail}.
+                  </p>
+                ) : (
+                  <form onSubmit={handleNewsletterSubmit} className="mt-3 space-y-3">
+                    <div>
+                      <label
+                        htmlFor="mega-nl-email"
+                        className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-400"
                       >
-                        {item.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="lg:col-span-2">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-300">
-                  {megaMenuColumns[1].title}
-                </div>
-                <ul className="mt-4 space-y-3">
-                  {megaMenuColumns[1].items.map((item) => (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        onClick={closeMenu}
-                        className="text-base font-semibold text-zinc-50 hover:text-white"
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="lg:col-span-3">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-300">
-                  {megaMenuColumns[2].title}
-                </div>
-                <ul className="mt-4 space-y-4">
-                  <li>
-                    <Link
-                      href="/events"
-                      onClick={closeMenu}
-                      className="text-base font-semibold text-zinc-50 hover:text-white"
-                    >
-                      Events
-                    </Link>
-                    <ul className="mt-2 space-y-1 pl-3">
-                      {eventsList.map((ev) => (
-                        <li key={ev.slug}>
-                          <Link
-                            href={`/events/${ev.slug}`}
-                            onClick={closeMenu}
-                            className="text-sm text-zinc-300 hover:text-white"
-                          >
-                            {ev.title}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-                  <li>
-                    <Link
-                      href="/knowledge-hub"
-                      onClick={closeMenu}
-                      className="text-base font-semibold text-zinc-50 hover:text-white"
-                    >
-                      Knowledge Hub
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/agent-portal"
-                      onClick={closeMenu}
-                      className="text-base font-semibold text-zinc-50 hover:text-white"
-                    >
-                      Agent Portal
-                    </Link>
-                    <ul className="mt-2 space-y-1 pl-3">
-                      <li>
-                        <Link href="/agent-portal/competitions" onClick={closeMenu} className="text-sm text-zinc-300 hover:text-white">
-                          Competitions
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/agent-portal/incentives" onClick={closeMenu} className="text-sm text-zinc-300 hover:text-white">
-                          Incentives
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/agent-portal/offers" onClick={closeMenu} className="text-sm text-zinc-300 hover:text-white">
-                          Offers
-                        </Link>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="lg:col-span-3">
-                <div className="border border-zinc-700 bg-zinc-800/60 p-5">
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-300">
-                    Newsletter
-                  </div>
-                  <h3 className="mt-2 text-xl font-semibold leading-snug text-zinc-50">
-                    Sign up for our newsletter
-                  </h3>
-                  {nlSubmitted ? (
-                    <p className="mt-4 text-sm text-zinc-300">
-                      Thanks. The next CTN Briefing will land in your inbox at {nlEmail}.
-                    </p>
-                  ) : (
-                    <form onSubmit={handleNewsletterSubmit} className="mt-4 space-y-3">
-                      <div>
-                        <label
-                          htmlFor="mega-nl-name"
-                          className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-400"
-                        >
-                          Name
-                        </label>
-                        <input
-                          id="mega-nl-name"
-                          type="text"
-                          value={nlName}
-                          onChange={(e) => setNlName(e.target.value)}
-                          className="mt-1 h-10 w-full border border-zinc-700 bg-zinc-900 px-3 text-sm text-zinc-50 outline-none focus:border-white"
-                          placeholder="Your name"
-                        />
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="mega-nl-email"
-                          className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-400"
-                        >
-                          Email
-                        </label>
+                        Email
+                      </label>
+                      <div className="mt-2 flex h-10 items-stretch gap-3">
                         <input
                           id="mega-nl-email"
                           type="email"
                           required
                           value={nlEmail}
                           onChange={(e) => setNlEmail(e.target.value)}
-                          className="mt-1 h-10 w-full border border-zinc-700 bg-zinc-900 px-3 text-sm text-zinc-50 outline-none focus:border-white"
+                          className="h-full min-w-0 flex-1 border border-zinc-700 bg-[#18181b] px-3 text-sm text-zinc-50 placeholder-zinc-600 outline-none focus:border-white"
                           placeholder="you@agency.co.uk"
                         />
+                        <button
+                          type="submit"
+                          className="h-full shrink-0 bg-white px-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-900 hover:bg-zinc-200"
+                        >
+                          Sign up
+                        </button>
                       </div>
-                      <button
-                        type="submit"
-                        className="inline-flex h-10 items-center justify-center bg-white px-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-900 hover:bg-zinc-200"
-                      >
-                        Sign up
-                      </button>
-                    </form>
-                  )}
-                </div>
+                    </div>
+                  </form>
+                )}
               </div>
             </div>
 
-            <div className="my-8 border-t border-zinc-700" />
+            {/* Divider */}
+            <div className="mt-10 border-t border-zinc-700" />
 
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-6">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-400">
-                Learn more
-              </div>
-              <ul className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-zinc-200">
-                {LEARN_MORE_LINKS.map((link) => (
-                  <li key={link.href}>
-                    <Link href={link.href} onClick={closeMenu} className="hover:text-white">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-6">
+            {/* Follow us */}
+            <div className="mt-6 flex items-center gap-6">
               <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-400">
                 Follow us
               </div>
-              <ul className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-zinc-200">
-                {socialLinks.map((s) => (
-                  <li key={s.label}>
-                    <Link href={s.href} onClick={closeMenu} className="hover:text-white">
-                      {s.label}
-                    </Link>
-                  </li>
+              <div className="flex items-center gap-4 text-zinc-400">
+                {[
+                  { label: "Instagram", href: "#" },
+                  { label: "X", href: "#" },
+                  { label: "Facebook", href: "#" },
+                  { label: "LinkedIn", href: "#" },
+                  { label: "Spotify", href: "#" },
+                ].map((s) => (
+                  <Link key={s.label} href={s.href} onClick={closeMenu} className="text-sm hover:text-white">
+                    {s.label}
+                  </Link>
                 ))}
-              </ul>
+              </div>
             </div>
+
           </Container>
         </div>
       ) : null}

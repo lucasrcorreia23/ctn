@@ -4,7 +4,8 @@ import { Placeholder } from "@/components/ui/Placeholder";
 import { SectionLabel } from "@/components/ui/SectionLabel";
 import { LinkButton } from "@/components/ui/Button";
 import { EditorialHero } from "@/components/sections/EditorialHero";
-import { EventsPromo } from "@/components/sections/EventsPromo";
+import { EventBanner } from "@/components/sections/EventBanner";
+import { CruiseChallengeSection } from "@/components/sections/CruiseChallengeSection";
 import { NewsletterCTA } from "@/components/sections/NewsletterCTA";
 import {
   articles,
@@ -16,7 +17,7 @@ import {
   getFeaturesByCategory,
   type FeatureCategory,
 } from "@/data/features";
-import { events } from "@/data/events";
+import { challengeEvents } from "@/data/events";
 import { magazineIssues } from "@/data/magazines";
 import { podcastEpisodes } from "@/data/podcast";
 import { agentItems } from "@/data/agentPortal";
@@ -52,43 +53,20 @@ const AGENT_TILES = [
 const CATEGORY_BLOCKS: {
   key: ArticleCategory;
   label: string;
-  hook: string;
 }[] = [
-  { key: "ocean", label: "Ocean", hook: "Mainstream and premium tonnage" },
-  { key: "river", label: "River", hook: "European waterways in focus" },
-  { key: "luxury", label: "Luxury", hook: "High-margin small ship product" },
-  {
-    key: "expedition",
-    label: "Expedition",
-    hook: "Polar capacity and adventure cruising",
-  },
+  { key: "ocean", label: "Ocean" },
+  { key: "river", label: "River" },
+  { key: "luxury", label: "Luxury" },
+  { key: "expedition", label: "Expedition" },
 ];
 
-const FEATURE_BLOCKS: {
+const FEATURES_SHOWCASE: {
   key: FeatureCategory;
   label: string;
-  hook: string;
 }[] = [
-  {
-    key: "analysis-comment",
-    label: "Analysis & Comment",
-    hook: "How the UK cruise trade is changing",
-  },
-  {
-    key: "interviews",
-    label: "Interviews",
-    hook: "Voices from the cruise sector",
-  },
-  {
-    key: "mktg-tips",
-    label: "Marketing Tips",
-    hook: "Practical agency marketing playbook",
-  },
-  {
-    key: "cruise-review",
-    label: "Cruise Reviews",
-    hook: "First-hand sailings from working agents",
-  },
+  { key: "analysis-comment", label: "Analysis & Comment" },
+  { key: "mktg-tips", label: "Marketing Tips" },
+  { key: "cruise-review", label: "Cruise Reviews" },
 ];
 
 function sortByDateDesc<T extends { date: string }>(items: T[]): T[] {
@@ -115,61 +93,40 @@ export default function HomePage() {
   const secondary = sortedArticles[1];
   const latestList = sortedArticles.slice(2, 12);
 
-  const usedSlugs = new Set<string>([
-    lead.slug,
-    secondary.slug,
-    ...latestList.map((a) => a.slug),
-  ]);
-
   const magazineLead = magazineIssues[0];
-
-  // Hero row 2: 1 large feature + 2 side articles
-  const heroPool: Article[] = sortedArticles
-    .filter((a) => !usedSlugs.has(a.slug))
-    .slice(0, 3);
-  heroPool.forEach((a) => usedSlugs.add(a.slug));
-  const [secondFeature, ...heroPair] = heroPool;
-
-  // Latest News mix: 4 most-recent articles not used above
-  const latestMixed: Article[] = sortedArticles
-    .filter((a) => !usedSlugs.has(a.slug))
-    .slice(0, 4);
-
   const podcastLead = podcastEpisodes[0];
-  const podcastMore = podcastEpisodes.slice(1, 4);
 
   return (
     <>
-      {/* 1. Hero — Latest list + 2-row Z-pattern (featured articles + secondary + magazine) */}
+      {/* 1. Hero — Latest list + lead article + secondary + magazine */}
       <EditorialHero
         article={lead}
         latest={latestList}
         secondary={secondary}
         magazine={magazineLead}
-        secondFeature={secondFeature}
-        sidePair={heroPair}
       />
 
-      {/* 3. Wave Awards — featured event (uses EventsPromo light theme) */}
-      <EventsPromo events={events} />
+      {/* 2. Event Banner — Cruise Summit strip */}
+      <EventBanner
+        eventName="Cruise Summit"
+        date="23 September 2026"
+        location="Manchester"
+        href="/events/cruise-summit-2026"
+      />
 
-     
-      {/* 4. News by Category — 4-col grid, each column = category (1 featured image+headline + 3 text-only headlines) */}
+      {/* 3. News by Category — 4-col grid */}
       <section
-        className="border-b border-zinc-200 bg-white"
+        className="border-b border-zinc-200 bg-gray-50"
         aria-labelledby="news-by-category"
       >
         <Container className="py-12 lg:py-16">
           <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
-            <div>
-            
-              <h2
-                id="news-by-category"
-                className="mt-2 text-2xl font-bold leading-tight tracking-tight text-zinc-900 sm:text-3xl"
-              >
-                Across the UK cruise categories
-              </h2>
-            </div>
+            <h2
+              id="news-by-category"
+              className="text-2xl font-bold leading-tight tracking-tight text-zinc-900 sm:text-3xl"
+            >
+              Across the UK cruise categories
+            </h2>
             <Link
               href="/news"
               className="text-sm font-semibold text-zinc-900 underline-offset-2 hover:underline"
@@ -238,129 +195,12 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* 8. Ad banner #1 */}
-      <AdBanner />
+      {/* 4. Cruise Challenge — 4-col event cards */}
+      <CruiseChallengeSection events={challengeEvents} />
 
-      {/* 9. Podcast + Magazines */}
-      <section className="border-b border-zinc-200 bg-white" aria-label="Podcast and magazines">
-        <Container className="py-10 lg:py-14">
-          <div className="grid gap-10 lg:grid-cols-2 lg:gap-0 lg:divide-x lg:divide-zinc-200">
-
-            {/* LEFT: Podcast */}
-            <div className="lg:pr-10">
-              <div className="flex items-center justify-between border-b border-zinc-200 pb-3">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700">
-                  The CTN Podcast
-                </span>
-                <Link href="/podcast" className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-900 hover:underline">
-                  See all episodes →
-                </Link>
-              </div>
-              <Link href="/podcast" className="group mt-5 block">
-                <Placeholder kind="podcast" ratio="16/9" />
-                <p className="mt-3 text-sm font-semibold leading-snug text-zinc-900 group-hover:underline">
-                  {podcastLead.title}
-                </p>
-                <p className="mt-1 text-sm text-zinc-500">{podcastLead.guest}</p>
-              </Link>
-            </div>
-
-            {/* RIGHT: Magazines */}
-            <div className="lg:pl-10">
-              <div className="flex items-center justify-between border-b border-zinc-200 pb-3">
-                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700">
-                  Latest Magazine Editions
-                </span>
-                <Link href="/magazines" className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-900 hover:underline">
-                  View all →
-                </Link>
-              </div>
-              <div className="mt-5 grid grid-cols-2 gap-4">
-                {magazineIssues.slice(0, 2).map((mag) => (
-                  <Link key={mag.slug} href={`/magazines/${mag.brand}`} className="group">
-                    <Placeholder kind="magazine" ratio="3/4" label={mag.issue} />
-                    <p className="mt-2 text-xs font-semibold leading-snug text-zinc-900 group-hover:underline">
-                      {mag.title}
-                    </p>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-          </div>
-        </Container>
-      </section>
-
-      {/* 10-13. Features & Analysis — 4 sections, 4 items each */}
-      {FEATURE_BLOCKS.map((block) => {
-        const items = sortByDateDesc(getFeaturesByCategory(block.key)).slice(
-          0,
-          4,
-        );
-        if (items.length < 2) return null;
-        return (
-          <section
-            key={block.key}
-            className="border-b border-zinc-200 bg-white"
-            aria-labelledby={`features-${block.key}`}
-          >
-            <Container className="py-12 lg:py-16">
-              <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
-                <div>
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700">
-                    {block.label}
-                  </div>
-                  <h2
-                    id={`features-${block.key}`}
-                    className="mt-2 text-2xl font-bold leading-tight tracking-tight text-zinc-900 sm:text-3xl"
-                  >
-                    {block.hook}
-                  </h2>
-                </div>
-                <Link
-                  href={`/features-analysis/${block.key}`}
-                  className="text-sm font-semibold text-zinc-900 underline-offset-2 hover:underline"
-                >
-                  More {block.label} →
-                </Link>
-              </div>
-
-              <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {items.map((feature) => {
-                  const minutes = readTimeFromBody(feature.body);
-                  return (
-                    <li key={feature.slug}>
-                      <Link
-                        href={`/features-analysis/${feature.slug}`}
-                        className="group flex flex-col gap-3"
-                      >
-                        <Placeholder kind={feature.imageKind} ratio="16/9" />
-                        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-700">
-                          {feature.categoryLabel}
-                        </span>
-                        <h3 className="text-base font-semibold leading-snug text-zinc-900 group-hover:underline">
-                          {feature.title}
-                        </h3>
-                        <div className="mt-auto text-[10px] uppercase tracking-[0.16em] text-zinc-500">
-                          {feature.author} · {feature.date} · {minutes} min
-                          read
-                        </div>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </Container>
-          </section>
-        );
-      })}
-
-      {/* 14. Ad banner #2 */}
-      <AdBanner />
-
-      {/* 15. Agent Portal CTA */}
+      {/* 5. Agent Portal CTA */}
       <section
-        className="border-b border-zinc-200 bg-white"
+        className="border-b border-zinc-200 bg-gray-50"
         aria-labelledby="agent-routing"
       >
         <Container className="py-12 lg:py-16">
@@ -418,7 +258,98 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* 16. The CTN Briefing — newsletter */}
+      {/* 6. Ad banner */}
+      <AdBanner />
+
+      {/* 7. Podcast + Magazines */}
+      <section className="border-b border-zinc-200 bg-white" aria-label="Podcast and magazines">
+        <Container className="py-10 lg:py-14">
+          <div className="grid gap-10 lg:grid-cols-2 lg:gap-0 lg:divide-x lg:divide-zinc-200">
+
+            {/* LEFT: Podcast */}
+            <div className="lg:pr-10">
+              <div className="flex items-center justify-between border-b border-zinc-200 pb-3">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700">
+                  The CTN Podcast
+                </span>
+                <Link href="/podcast" className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-900 hover:underline">
+                  See all episodes →
+                </Link>
+              </div>
+              <Link href="/podcast" className="group mt-5 block">
+                <Placeholder kind="podcast" ratio="16/9" />
+                <p className="mt-3 text-sm font-semibold leading-snug text-zinc-900 group-hover:underline">
+                  {podcastLead.title}
+                </p>
+                <p className="mt-1 text-sm text-zinc-500">{podcastLead.guest}</p>
+              </Link>
+            </div>
+
+            {/* RIGHT: Magazines */}
+            <div className="lg:pl-10">
+              <div className="flex items-center justify-between border-b border-zinc-200 pb-3">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700">
+                  Latest Magazine Editions
+                </span>
+                <Link href="/magazines" className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-900 hover:underline">
+                  View all →
+                </Link>
+              </div>
+              <div className="mt-5 grid grid-cols-2 gap-4">
+                {magazineIssues.slice(0, 2).map((mag) => (
+                  <Link key={mag.slug} href={`/magazines/${mag.brand}`} className="group">
+                    <Placeholder kind="magazine" ratio="3/4" label={mag.issue} />
+                    <p className="mt-2 text-xs font-semibold leading-snug text-zinc-900 group-hover:underline">
+                      {mag.title}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </Container>
+      </section>
+
+      {/* 8. Features — heading left, 3-col right */}
+      <section className="border-b border-zinc-200 bg-gray-50" aria-labelledby="features-heading">
+        <Container className="py-12 lg:py-16">
+          <div className="flex items-start justify-between gap-10">
+            <h2
+              id="features-heading"
+              className="shrink-0 text-2xl font-bold tracking-tight text-zinc-900 sm:text-3xl"
+            >
+              Features &gt;
+            </h2>
+
+            <ul className="grid flex-1 gap-[18px] sm:grid-cols-3">
+              {FEATURES_SHOWCASE.map((block) => {
+                const items = sortByDateDesc(getFeaturesByCategory(block.key));
+                const feature = items[0];
+                if (!feature) return null;
+                return (
+                  <li key={block.key}>
+                    <Link
+                      href={`/features-analysis/${feature.slug}`}
+                      className="group flex flex-col gap-3"
+                    >
+                      <Placeholder kind={feature.imageKind} ratio="16/9" />
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
+                        {block.label}
+                      </span>
+                      <h3 className="text-base font-semibold leading-snug text-zinc-900 group-hover:underline">
+                        {feature.title}
+                      </h3>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </Container>
+      </section>
+
+      {/* 9. The CTN Briefing — newsletter */}
       <NewsletterCTA />
     </>
   );

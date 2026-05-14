@@ -19,8 +19,8 @@
   --color-surface: var(--surface);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-comic-neue);
+  --font-mono: var(--font-comic-neue);
 }
 
 html,

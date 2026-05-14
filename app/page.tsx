@@ -19,7 +19,6 @@ import {
 import { events } from "@/data/events";
 import { magazineIssues } from "@/data/magazines";
 import { podcastEpisodes } from "@/data/podcast";
-import { knowledgeCategories } from "@/data/knowledgeHub";
 import { agentItems } from "@/data/agentPortal";
 import { readTimeFromBody } from "@/lib/readTime";
 
@@ -96,59 +95,17 @@ function sortByDateDesc<T extends { date: string }>(items: T[]): T[] {
   return [...items].sort((a, b) => b.date.localeCompare(a.date));
 }
 
-function KnowledgeHubBand({ id }: { id: string }) {
+function AdBanner() {
   return (
-    <section
-      className="border-y border-zinc-900 bg-white"
-      aria-labelledby={id}
-    >
-      <Container className="py-10 lg:py-12">
-        <div className="border border-dashed border-zinc-900 bg-zinc-50 p-4 sm:p-6">
-          <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.16em] text-zinc-500">
-            <span>AD SLOT · 970 × 250</span>
-            <span>CTN Sponsored</span>
-          </div>
-          <div className="mt-4 grid gap-6 lg:grid-cols-12 lg:items-center">
-            <div className="lg:col-span-5">
-              <Placeholder kind="training" ratio="16/9" />
-            </div>
-            <div className="lg:col-span-7">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700">
-                Knowledge Hub · {knowledgeCategories.length} categories
-              </div>
-              <h2
-                id={id}
-                className="mt-2 text-2xl font-bold leading-tight tracking-tight text-zinc-900 sm:text-3xl lg:text-4xl"
-              >
-                Practical training for cruise selling
-              </h2>
-              <p className="mt-3 max-w-2xl text-sm text-zinc-700 sm:text-base">
-                Guides, toolkits, and webinars built with active UK agencies.
-                Browse {knowledgeCategories.length} topic areas covering
-                selling cruise, destinations, ship knowledge, marketing,
-                compliance, and data.
-              </p>
-              <div className="mt-4 flex flex-wrap gap-3">
-                <LinkButton
-                  href="/knowledge-hub"
-                  variant="primary"
-                  size="sm"
-                >
-                  Open Knowledge Hub
-                </LinkButton>
-                <LinkButton
-                  href="/newsletter"
-                  variant="outline"
-                  size="sm"
-                >
-                  Get weekly briefings
-                </LinkButton>
-              </div>
-            </div>
-          </div>
+    <div className="border-b border-zinc-200 bg-white">
+      <Container className="py-4">
+        <div className="relative h-36 w-full border border-zinc-300 bg-zinc-100 wf-stripes">
+          <span className="absolute top-2 right-2 border border-zinc-300 bg-white px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.16em] text-zinc-500">
+            Sponsored
+          </span>
         </div>
       </Container>
-    </section>
+    </div>
   );
 }
 
@@ -205,14 +162,12 @@ export default function HomePage() {
         <Container className="py-12 lg:py-16">
           <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
             <div>
-              <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700">
-                News by Category
-              </div>
+            
               <h2
                 id="news-by-category"
                 className="mt-2 text-2xl font-bold leading-tight tracking-tight text-zinc-900 sm:text-3xl"
               >
-                Across the UK cruise verticals
+                Across the UK cruise categories
               </h2>
             </div>
             <Link
@@ -232,7 +187,7 @@ export default function HomePage() {
               const [featured, ...rest] = items;
               return (
                 <div key={block.key} className="flex flex-col">
-                  <div className="flex items-baseline justify-between border-b border-zinc-900 pb-2">
+                  <div className="border-b border-zinc-900 pb-2">
                     <h3 className="text-lg font-bold tracking-tight text-zinc-900">
                       <Link
                         href={`/news/${block.key}`}
@@ -241,12 +196,6 @@ export default function HomePage() {
                         {block.label}
                       </Link>
                     </h3>
-                    <Link
-                      href={`/news/${block.key}`}
-                      className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-700 hover:underline"
-                    >
-                      More {block.label} →
-                    </Link>
                   </div>
 
                   <article className="mt-4 flex flex-col gap-3">
@@ -289,120 +238,55 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* 8. Knowledge Hub band #1 */}
-      <KnowledgeHubBand id="kh-band-1" />
+      {/* 8. Ad banner #1 */}
+      <AdBanner />
 
-      {/* 9. Magazines + Podcast */}
-      <section
-        className="border-b border-zinc-200 bg-white"
-        aria-labelledby="series-multimedia"
-      >
-        <Container className="py-12 lg:py-16">
-          <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
-            <div>
-              <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700">
-                Magazines & Podcast
-              </div>
-              <h2
-                id="series-multimedia"
-                className="mt-2 text-2xl font-bold leading-tight tracking-tight text-zinc-900 sm:text-3xl"
-              >
-                Read the issue, hear the conversation
-              </h2>
-            </div>
-          </div>
+      {/* 9. Podcast + Magazines */}
+      <section className="border-b border-zinc-200 bg-white" aria-label="Podcast and magazines">
+        <Container className="py-10 lg:py-14">
+          <div className="grid gap-10 lg:grid-cols-2 lg:gap-0 lg:divide-x lg:divide-zinc-200">
 
-          <div className="mt-8 grid gap-8 lg:grid-cols-12">
-            {/* Magazines */}
-            <div className="lg:col-span-6">
-              <div className="flex items-center justify-between border-b border-zinc-200 pb-2">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700">
-                  Magazines
-                </div>
-                <Link
-                  href="/magazines"
-                  className="text-xs font-semibold text-zinc-900 underline-offset-2 hover:underline"
-                >
-                  Hub →
-                </Link>
-              </div>
-              <Link
-                href={`/magazines/${magazineLead.brand}`}
-                className="group mt-4 grid gap-4 sm:grid-cols-[180px_1fr]"
-              >
-                <Placeholder kind="magazine" ratio="3/4" />
-                <div className="flex flex-col gap-2">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700">
-                    Latest issue · {magazineLead.issue}
-                  </span>
-                  <h3 className="text-lg font-bold leading-snug text-zinc-900 group-hover:underline sm:text-xl">
-                    {magazineLead.title}
-                  </h3>
-                  <ul className="space-y-1 text-sm text-zinc-700">
-                    {magazineLead.highlights.map((h) => (
-                      <li key={h} className="flex gap-2">
-                        <span aria-hidden className="text-zinc-400">
-                          ·
-                        </span>
-                        {h}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-auto text-[10px] uppercase tracking-[0.16em] text-zinc-500">
-                    {magazineLead.pageCount} pages · {magazineLead.date}
-                  </div>
-                </div>
-              </Link>
-            </div>
-
-            {/* Podcast */}
-            <div className="lg:col-span-6">
-              <div className="flex items-center justify-between border-b border-zinc-200 pb-2">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700">
-                  Podcast
-                </div>
-                <Link
-                  href="/podcast"
-                  className="text-xs font-semibold text-zinc-900 underline-offset-2 hover:underline"
-                >
-                  All episodes →
-                </Link>
-              </div>
-              <Link
-                href="/podcast"
-                className="group mt-4 flex flex-col gap-3"
-              >
-                <Placeholder kind="podcast" ratio="16/9" />
+            {/* LEFT: Podcast */}
+            <div className="lg:pr-10">
+              <div className="flex items-center justify-between border-b border-zinc-200 pb-3">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700">
-                  Episode {podcastLead.number} · {podcastLead.duration}
+                  The CTN Podcast
                 </span>
-                <h3 className="text-lg font-bold leading-snug text-zinc-900 group-hover:underline sm:text-xl">
+                <Link href="/podcast" className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-900 hover:underline">
+                  See all episodes →
+                </Link>
+              </div>
+              <Link href="/podcast" className="group mt-5 block">
+                <Placeholder kind="podcast" ratio="16/9" />
+                <p className="mt-3 text-sm font-semibold leading-snug text-zinc-900 group-hover:underline">
                   {podcastLead.title}
-                </h3>
-                <p className="text-sm text-zinc-600">
-                  Guest: {podcastLead.guest}
                 </p>
+                <p className="mt-1 text-sm text-zinc-500">{podcastLead.guest}</p>
               </Link>
-              <ol className="mt-4 divide-y divide-zinc-200 border-t border-zinc-200">
-                {podcastMore.map((ep) => (
-                  <li key={ep.slug} className="py-3">
-                    <Link href="/podcast" className="group flex gap-3">
-                      <span className="text-lg font-bold tabular-nums text-zinc-300">
-                        {ep.number}
-                      </span>
-                      <div className="flex flex-1 flex-col gap-1">
-                        <span className="text-[10px] uppercase tracking-[0.16em] text-zinc-500">
-                          {ep.duration} · {ep.date}
-                        </span>
-                        <span className="text-sm font-semibold leading-snug text-zinc-900 group-hover:underline">
-                          {ep.title}
-                        </span>
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ol>
             </div>
+
+            {/* RIGHT: Magazines */}
+            <div className="lg:pl-10">
+              <div className="flex items-center justify-between border-b border-zinc-200 pb-3">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-700">
+                  Latest Magazine Editions
+                </span>
+                <Link href="/magazines" className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-900 hover:underline">
+                  View all →
+                </Link>
+              </div>
+              <div className="mt-5 grid grid-cols-2 gap-4">
+                {magazineIssues.slice(0, 2).map((mag) => (
+                  <Link key={mag.slug} href={`/magazines/${mag.brand}`} className="group">
+                    <Placeholder kind="magazine" ratio="3/4" label={mag.issue} />
+                    <p className="mt-2 text-xs font-semibold leading-snug text-zinc-900 group-hover:underline">
+                      {mag.title}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
           </div>
         </Container>
       </section>
@@ -471,8 +355,8 @@ export default function HomePage() {
         );
       })}
 
-      {/* 14. Knowledge Hub band #2 */}
-      <KnowledgeHubBand id="kh-band-2" />
+      {/* 14. Ad banner #2 */}
+      <AdBanner />
 
       {/* 15. Agent Portal CTA */}
       <section

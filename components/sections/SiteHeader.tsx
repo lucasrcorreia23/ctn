@@ -43,10 +43,21 @@ export function SiteHeader() {
   const eventsList = useMemo(() => events.slice(0, 4), []);
 
   const [scrolled, setScrolled] = useState(false);
+  const lastYRef = useRef(0);
   const closeMenu = () => setMenuOpen(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    lastYRef.current = window.scrollY;
+    const onScroll = () => {
+      const currentY = window.scrollY;
+      const lastY = lastYRef.current;
+      if (currentY < lastY) {
+        setScrolled(false);
+      } else if (currentY > lastY && currentY > 80) {
+        setScrolled(true);
+      }
+      lastYRef.current = currentY;
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -91,7 +102,7 @@ export function SiteHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white">
+      <header className={`sticky top-0 z-40 bg-white transition-shadow duration-300 ease-in-out${scrolled ? ' shadow-xs' : ''}`}>
 
         {/* Topbar — collapses on scroll */}
         <div
@@ -99,7 +110,7 @@ export function SiteHeader() {
             scrolled ? "max-h-0" : "max-h-16"
           }`}
         >
-        <Container className="flex h-10 items-center justify-between">
+        <Container className="flex py-3 items-center justify-between">
             <nav
               aria-label="Utility"
               className="hidden items-center gap-5 text-[11px] uppercase tracking-[0.16em] text-zinc-600 sm:flex"
@@ -110,7 +121,7 @@ export function SiteHeader() {
               <Link href="/newsletter" className="hover:text-zinc-900">Newsletter</Link>
             </nav>
 
-            <div className="flex items-center gap-4 text-[11px] uppercase tracking-[0.16em] text-zinc-600">
+            <div className="flex items-center gap-4 text-xs uppercase tracking-[0.16em] text-zinc-600">
               <Link
                 href="/subscribe"
                 className="inline-flex h-9 items-center justify-center bg-zinc-900 px-3.5 font-medium text-white hover:bg-zinc-700"
@@ -123,11 +134,19 @@ export function SiteHeader() {
                 className="inline-flex items-center gap-1.5 hover:text-zinc-900"
                 aria-label="Open search"
               >
-                <span
+                <svg
                   aria-hidden
-                  className="block h-2 w-2 flex-shrink-0 rounded-full border border-zinc-300"
-                />
-                <span className="hidden sm:inline">Search</span>
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  className="h-3.5 w-3.5 flex-shrink-0"
+                >
+                  <circle cx="6.5" cy="6.5" r="4.5" />
+                  <line x1="10" y1="10" x2="14" y2="14" />
+                </svg>
               </button>
               <button
                 ref={menuButtonRef}
@@ -143,7 +162,6 @@ export function SiteHeader() {
                   <span className="block h-px w-3 bg-zinc-600" />
                   <span className="block h-px w-3 bg-zinc-600" />
                 </span>
-                <span className="hidden sm:inline">Menu</span>
               </button>
             </div>
           </Container>
@@ -165,22 +183,24 @@ export function SiteHeader() {
           </Link>
         </div>
 
-        {/* Desktop: split nav + logo
-            – two full-width absolute lines (top + bottom) frame the navbar
-            – logo bg-white covers both lines creating a symmetric gap */}
-        <div className="relative hidden w-full lg:block">
-          <div className="absolute inset-x-0 top-0 h-px bg-zinc-200" />
-          <div className="absolute inset-x-0 bottom-0 h-px bg-zinc-200" />
+        {/* Desktop: navbar */}
+        <div className={`hidden w-full relative lg:block${scrolled ? ' border-b border-zinc-200' : ''}`}>
+          {!scrolled && (
+            <>
+              <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-zinc-200" />
+              <div aria-hidden className="absolute inset-x-0 bottom-0 h-px bg-zinc-200" />
+            </>
+          )}
           <div className="relative mx-auto flex max-w-7xl items-center px-8">
             <nav
               aria-label="Primary categories left"
-              className="flex flex-1 items-center justify-end gap-10 py-8"
+              className={`flex flex-1 items-center justify-end gap-10 pr-8 transition-[padding] duration-300 ease-in-out ${scrolled ? 'py-4' : 'py-8'}`}
             >
               {headerCategoriesLeft.map((cat) => (
                 <Link
                   key={cat.href}
                   href={cat.href}
-                  className="text-sm font-semibold uppercase tracking-[0.16em] text-zinc-900 hover:underline"
+                  className={`font-semibold uppercase tracking-[0.16em] text-zinc-900 hover:underline transition-[font-size] duration-300 ease-in-out ${scrolled ? 'text-xs' : 'text-sm'}`}
                 >
                   {cat.label}
                 </Link>
@@ -189,7 +209,7 @@ export function SiteHeader() {
 
             <Link
               href="/"
-              className="flex items-center bg-white px-12 py-8"
+              className={`relative z-10 flex self-stretch items-center bg-white py-1 transition-[padding] duration-300 ease-in-out ${scrolled ? 'px-6' : 'px-12'}`}
               aria-label="Cruise Trade News home"
             >
               <Image
@@ -198,19 +218,19 @@ export function SiteHeader() {
                 width={912}
                 height={300}
                 priority
-                className="h-16 w-auto"
+                className={`w-auto transition-[height] duration-300 ease-in-out ${scrolled ? 'h-10' : 'h-16'}`}
               />
             </Link>
 
             <nav
               aria-label="Primary categories right"
-              className="flex flex-1 items-center gap-10 py-8"
+              className={`flex flex-1 items-center gap-10 pl-8 transition-[padding] duration-300 ease-in-out ${scrolled ? 'py-4' : 'py-8'}`}
             >
               {headerCategoriesRight.map((cat) => (
                 <Link
                   key={cat.href}
                   href={cat.href}
-                  className="text-sm font-semibold uppercase tracking-[0.16em] text-zinc-900 hover:underline"
+                  className={`font-semibold uppercase tracking-[0.16em] text-zinc-900 hover:underline transition-[font-size] duration-300 ease-in-out ${scrolled ? 'text-xs' : 'text-sm'}`}
                 >
                   {cat.label}
                 </Link>
@@ -218,6 +238,13 @@ export function SiteHeader() {
             </nav>
           </div>
         </div>
+
+        {/* Desktop: spacer abaixo da navbar */}
+        <div
+          aria-hidden
+          className="hidden overflow-hidden transition-all duration-300 ease-in-out lg:block"
+          style={{ height: scrolled ? 0 : 8 }}
+        />
 
       </header>
 

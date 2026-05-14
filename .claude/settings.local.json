@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Find \"C:\\\\Users\\\\LucasRodriguesC\\\\Desktop\\\\atomsix\\\\ctn\\\\ctn\" -name \"page.tsx\" -o -name \"layout.tsx\")",
+      "mcp__claude_ai_Figma__get_design_context"
+    ]
+  }
+}
